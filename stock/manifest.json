@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "stock",
     "description": "股票插件",
-    "version": "0.0.0.1",
+    "version": "0.0.0.2",
     "browser_action": {
         "default_title": "股票插件",
         "default_popup": "popup.html",
@@ -21,7 +21,8 @@
     }],
     // 权限申请
     "permissions": [
-    	"notifications",
+        "storage", // 存储
+    	"notifications", // 通知
     	"http://hq.sinajs.cn"
     ],
     // 可选，向地址栏注册一个关键字以提供搜索建议，只能设置一个关键字

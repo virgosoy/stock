@@ -1,46 +1,10 @@
 const APPNAME = 'shock';
 
 
-var setting = {
-	shockCodes:['sz002587','sz000725','sz002419','sh000001']
-}
-
-
-/**
- * 获取股票信息
- * @Returns Promise<{}>
- */
-function getShockInfo(){
-	let url = `//hq.sinajs.cn/?list=${setting.shockCodes.join(',')}`
-	return fetch(url)
-		.then(res => res.blob())
-		.then(blob => new Promise((resolve)=>{
-			var reader = new FileReader()
-			reader.onload = (e)=>{
-				resolve(e.target.result)
-			}
-			reader.readAsText(blob,'GBK')
-		}))
-		.then(text => {
-			var result = {}
-			var reg = /var hq_str_(.*?)="(.*?)";/mg
-			while(true){
-				var regResult = reg.exec(text)
-				if(regResult === null){
-					break
-				}
-				var infoArr = regResult[2].split(',')
-				result[regResult[1]] = {infoArr,name:infoArr[0],yesterdayEndPrice:infoArr[2],currentPrice:infoArr[3],changePercent:Math.round((infoArr[3]-infoArr[2])/infoArr[2]*10000)/100}
-			}
-			return result
-		})
-}
-
-
-
 var shockDom = document.createElement("div")
 var btnHideDom
 var contentDom
+var timer
 /**
  * 添加股票到界面上
  */
@@ -80,6 +44,7 @@ function appendShock(){
 	shockDom.id = 'shockDom'
 	shockDom.innerHTML = html
 
+	/* ******事件****** */
 	btnHideDom = shockDom.querySelector('.btn-hide')
 	contentDom = shockDom.querySelector('.content')
 	btnHideDom.addEventListener('click',function(e){
@@ -88,25 +53,53 @@ function appendShock(){
 	contentDom.addEventListener('click',function(e){
 		contentDom.classList.toggle('hide')
 	})
+// 	var mo = new MutationObserver(function(mutationRecords,observer){
+// 		if(mutationRecords.some(mr=>mr.attributeName === 'class')){
+// 			if(contentDom.classList.contains('hide')){
+// 				clearInterval(timer)
+// 				timer = undefined
+// 			}else{
+// 				if(timer)return
+// 				timer = setInterval(function(){
+// 					refreshShock()
+// 				},1000)
+// 			}
+// 		}
+// 	})
+// 	mo.observe(contentDom,{attributes: true,attributeFilter: ['class']})
+
 	document.body.appendChild(shockDom)
 }
 
-async function refreshShock(){
-	// console.log(new Date())
-	var shockInfos = await getShockInfo()
-	var html = Object.values(shockInfos).map(shockInfo => {
-		return `<div>
-			<span>${shockInfo.name}</span>：<span>${shockInfo.currentPrice}</span>（<span>${shockInfo.changePercent}</span>）
-		</div>`
-	}).reduce((a,b)=>a + b)
-	contentDom.innerHTML = `<div></div>${html}`
+/**
+	添加观察者
+*/
+function observerAttached(){
+	chrome.runtime.sendMessage({message: '添加观察者'}, function(response) {
+		console.log('收到来自后台的回复：' + response);
+	});	
 }
+
+/**
+	background返回股票信息
+*/
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse)
+{
+	contentDom.innerHTML = request
+	console.log('收到了后台的消息',new Date())
+	sendResponse('我收到了你的消息！');
+});
+
+function delay(ms){
+	return new Promise(function(resolve){
+		setTimeout(function(){
+			resolve()
+		},ms)
+	})	
+}
+
+
 
 /* *************************** 执行代码 *************************** */
 appendShock()
-refreshShock()
-setInterval(function(){
-	if(!contentDom.classList.contains('hide')){
-		refreshShock()
-	}
-},1000)
+observerAttached()
