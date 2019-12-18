@@ -23,6 +23,15 @@ settings：配置项，详见 `background.js` 的变量 `settings`
 - [ ] 可设置显示的股票
 - [ ] 隐藏时不执行定时器
 - [ ] 消息弹窗
+- [ ] z-index设置
+
+
+
+## 0.0.0.3.191218_beta
+
+F：当浏览器窗口关闭时发送消息报错，现改为报错时移除监听列表中的tabId
+
+F：manifest.json 的 permission 报错
 
 
 
