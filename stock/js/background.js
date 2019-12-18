@@ -102,6 +102,10 @@ var loop = () => {
 			observerList.forEach((tabId) =>{
 				chrome.tabs.sendMessage(tabId,html,function(response){
 					console.log(response)
+					if(chrome.runtime.lastError){
+						console.log(`error:${chrome.runtime.lastError.message}`)
+						observerList.splice(observerList.indexOf(tabId),1)
+					}
 				})
 			})
 		})
