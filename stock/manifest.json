@@ -23,7 +23,7 @@
     "permissions": [
         "storage", // 存储
     	"notifications", // 通知
-    	"http://hq.sinajs.cn"
+    	"http://hq.sinajs.cn/*"
     ],
     // 可选，向地址栏注册一个关键字以提供搜索建议，只能设置一个关键字
     "omnibox": { "keyword" : "stock" }
