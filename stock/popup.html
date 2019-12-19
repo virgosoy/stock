@@ -7,6 +7,14 @@
     Refresh: <input id="refreshMsIpt" type="range" min="1000" max="30000" step="1000" value="1000"/>
     <span id="refreshMsLbl">1000</span>ms
     <button type="button" id="toggleRunningBtn">ON</button>
+    <div class="shock-list">
+		<ul class="shock-list__items-wrap">
+		</ul>
+		<template class="shock-list__item-template">
+			<li class="shock-list__item"><span class="shock-list__item-code"></span><button type="button" class="shock-list__item-remove-btn">x</button></li>
+		</template>
+		<input type="text" class="shock-list__add-input" /><button type="button" class="shock-list__add-btn">add</button>
+    </div>
 <script type="text/javascript" src="js/popup.js"></script>
 </body>
 </html>

@@ -12,7 +12,7 @@ var settings = {
 // 保存设置到存储
 function saveStorage(){
 	chrome.storage.local.set(settings,function(){
-
+		console.log(`saveStorage success`,settings)
 	})
 }
 /**
@@ -21,7 +21,8 @@ function saveStorage(){
 */
 function getStorage(){
 	return new Promise(resolve => {
-		chrome.storage.local.get({refreshMsTime: 1000},function(v){
+		chrome.storage.local.get(settings,function(v){
+			console.log(`getStorage success`,v)
 			settings = Object.assign(settings,v);
 			resolve(settings)
 		})	
@@ -113,7 +114,7 @@ var loop = () => {
 	},settings.refreshMsTime)
 }
 
-/* ****************** 给popup调用 ********************* */
+/* ********************************************* 给popup调用 ************************************************ */
 /**
 	设置刷新毫秒
 */
@@ -149,6 +150,29 @@ function startRefresh(){
 */
 function toggleRefresh(){
 	settings.running ? stopRefresh() : startRefresh()
+}
+
+/**
+	添加股票
+*/
+function addShock(shockCode){
+	if(settings.shockCodes.includes(shockCode)){
+		console.error(`股票代码已存在:${shockCode}`)
+		return
+	}
+	settings.shockCodes.push(shockCode)
+	saveStorage()
+}
+/**
+	删除股票
+*/
+function removeShock(shockCode){
+	if(!settings.shockCodes.includes(shockCode)){
+		console.error(`股票代码不存在:${shockCode}`)
+		return
+	}
+	settings.shockCodes.splice(settings.shockCodes.indexOf(shockCode),1)
+	saveStorage()
 }
 
 
