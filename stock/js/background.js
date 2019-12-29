@@ -6,7 +6,7 @@ var timer; // 定时器
 var settings = {
 	running: true, // 是否运行中
 	refreshMsTime: 1000, // 刷新时间间隔
-	shockCodes:['sz002587','sz000725','sz002419','sh000001'] // 显示的股票
+	shockCodes:['sh000001'] // 显示的股票
 }
 
 // 保存设置到存储
