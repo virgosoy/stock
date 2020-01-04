@@ -8,25 +8,35 @@ var timer; // 定时器
 var settings = {
 	running: true, // 是否运行中
 	refreshMsTime: 1000, // 刷新时间间隔
-	shockCodeList: ['sz000725','sz002419','sh000001','sz002594'], // 所有股票列表
+	// 默认股票代码列表，用于手动修改代码码设置默认显示股票
+	defaultShockCodeList: ['sz000725','sh000001'], 
+	// shockCodeList: ['sh000001'], // 所有股票列表
 	// 废弃：shockCodes，可能会被存储
+	// 股票在本地的属性，如是否显示
+	shockLocalPropMap: {
+	// 	'sh000001':{display: true}
+	}, // 股票的具体属性{display:boolean是否显示}
+	// 股票在本地的默认属性，手动修改代码设置
+	defaultShockLocalProp:{display: true}
 }
 
-// 股票在本地的属性，如是否显示
-var shockLocalPropMap = {
-	'sz000725':{display: true},
-	'sz002419':{display: true},
-	'sh000001':{display: true}
-} // 股票的具体属性{display:boolean是否显示}
+var shockLocalPropMap = new Proxy(settings.shockLocalPropMap,{})
 
 /**
 	生成股票信息
+	@Param {add:Array<String>,del:Array<String>} add：增加的股票代码列表，del：删除的股票代码列表
 */
-function generateShockLocalPropMap(){
-	var defaultProp = {display: true}
-	var newShockCodeArr = _.difference(settings.shockCodeList,Object.keys(shockLocalPropMap))
-// 	var delShockCodeArr = _.difference(Object.keys(shockLocalPropMap),settings.shockCodeList)
-	newShockCodeArr.forEach(shockCode => shockLocalPropMap[shockCode] = _.cloneDeep(defaultProp))
+function generateShockLocalPropMap({add = [],del = []} = {}){
+	var defaultProp = settings.defaultShockLocalProp
+//	var newShockCodeArr = _.difference(settings.defaultShockCodeList,Object.keys(shockLocalPropMap))
+// 	var delShockCodeArr = _.difference(Object.keys(shockLocalPropMap),settings.defaultShockCodeList)
+	add.forEach(shockCode => shockLocalPropMap[shockCode] = _.cloneDeep(defaultProp))
+	del.forEach(shockCode => delete shockLocalPropMap[shockCode])
+
+	// 如果没有股票，那么使用默认股票
+	if(!shockLocalPropMap || Object.keys(shockLocalPropMap).length === 0){
+		settings.defaultShockCodeList.forEach(shockCode => shockLocalPropMap[shockCode] = _.cloneDeep(defaultProp))
+	}
 }
 
 // 保存设置到存储
@@ -44,6 +54,8 @@ function getStorage(){
 		chrome.storage.local.get(settings,function(v){
 			console.info(`getStorage success`,v)
 			settings = Object.assign(settings,v);
+			// 代理
+			shockLocalPropMap = new Proxy(settings.shockLocalPropMap,{})
 			resolve(settings)
 		})	
 	})
@@ -213,26 +225,21 @@ function getDisplayShockCodeList(){
 	添加股票
 */
 function addShock(shockCode){
-	if(settings.shockCodeList.includes(shockCode)){
+	if(shockLocalPropMap[shockCode]){
 		console.error(`股票代码已存在:${shockCode}`)
 		return
 	}
-	settings.shockCodeList.push(shockCode)
-	generateShockLocalPropMap()
-	saveStorage()
+	generateShockLocalPropMap({add:[shockCode]})
 }
 /**
 	删除股票
 */
 function removeShock(shockCode){
-	if(!settings.shockCodeList.includes(shockCode) && !shockLocalPropMap[shockCode]){
+	if(!shockLocalPropMap[shockCode]){
 		console.error(`股票代码不存在:${shockCode}`)
 		return
 	}
-	settings.shockCodeList.splice(settings.shockCodeList.indexOf(shockCode),1)
-	delete shockLocalPropMap[shockCode]
-	generateShockLocalPropMap()
-	saveStorage()
+	generateShockLocalPropMap({del:[shockCode]})
 }
 /**
 	切换股票显示/隐藏
