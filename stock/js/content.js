@@ -1,9 +1,11 @@
 const APPNAME = 'shock';
 
 
+// DOM
 var shockDom = document.createElement("div")
-var btnHideDom
-var contentDom
+var shockDisplayBtn
+var shockContent
+
 var timer
 /**
  * 添加股票到界面上
@@ -19,7 +21,7 @@ function appendShock(){
 			font-size: 12px;
 			color: #000;
 		}
-		#shockDom .btn-hide{
+		#shockDom .shock__display-btn{
 			opacity: 0;
 			--height: 18px;
 			position: absolute;
@@ -32,30 +34,36 @@ function appendShock(){
 			border-top-right-radius: 10px;
 			cursor: pointer;
 		}
-		#shockDom .btn-hide:hover{
+		#shockDom .shock__display-btn:hover{
 			opacity: 1;
 		}
-		#shockDom .content.hide{
+		#shockDom .shock__content.shock__content--hide{
 			display: none;
 		}
 	</style>
-	<div class="btn-hide">○</div>
-	<div class="content hide"></div>`
+	<div class="shock__display-btn">○</div>
+	<div class="shock__content shock__content--hide">
+		<!-- 
+		<div>
+			<span>上证指数</span>：<span>3083.7858</span>（<span>-0.05</span>）
+		</div>
+		-->
+	</div>`
 	shockDom.id = 'shockDom'
 	shockDom.innerHTML = html
 
 	/* ******事件****** */
-	btnHideDom = shockDom.querySelector('.btn-hide')
-	contentDom = shockDom.querySelector('.content')
-	btnHideDom.addEventListener('click',function(e){
-		contentDom.classList.toggle('hide')
+	shockDisplayBtn = shockDom.querySelector('.shock__display-btn')
+	shockContent = shockDom.querySelector('.shock__content')
+	shockDisplayBtn.addEventListener('click',function(e){
+		shockContent.classList.toggle('shock__content--hide')
 	})
-	contentDom.addEventListener('click',function(e){
-		contentDom.classList.toggle('hide')
+	shockContent.addEventListener('click',function(e){
+		shockContent.classList.toggle('shock__content--hide')
 	})
 // 	var mo = new MutationObserver(function(mutationRecords,observer){
 // 		if(mutationRecords.some(mr=>mr.attributeName === 'class')){
-// 			if(contentDom.classList.contains('hide')){
+// 			if(shockContent.classList.contains('shock__content--hide')){
 // 				clearInterval(timer)
 // 				timer = undefined
 // 			}else{
@@ -66,7 +74,7 @@ function appendShock(){
 // 			}
 // 		}
 // 	})
-// 	mo.observe(contentDom,{attributes: true,attributeFilter: ['class']})
+// 	mo.observe(shockContent,{attributes: true,attributeFilter: ['class']})
 
 	document.body.appendChild(shockDom)
 }
@@ -85,7 +93,7 @@ function observerAttached(){
 */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse)
 {
-	contentDom.innerHTML = request
+	shockContent.innerHTML = request
 	console.debug('收到了后台的消息',new Date())
 	sendResponse('我收到了你的消息！');
 });

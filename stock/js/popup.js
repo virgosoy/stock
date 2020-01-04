@@ -65,7 +65,7 @@ function renderShockList(){
     while (shockListItemsWrap.firstChild) {
         shockListItemsWrap.removeChild(shockListItemsWrap.firstChild);
     }
-    Object.entries(bg.getShocksInfo()).forEach(([key,prop])=>{
+    Object.entries(bg.getShockLocalPropMap()).forEach(([key,prop])=>{
         var itemDom = shockListItemTemplate.content.cloneNode(true)
         itemDom.querySelector('.shock-list__item-code').innerText = key
         itemDom.querySelector('.shock-list__item-toggle-display').innerText = prop.display ? 'hide' : 'show'

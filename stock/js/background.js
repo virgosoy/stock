@@ -12,7 +12,8 @@ var settings = {
 	// 废弃：shockCodes，可能会被存储
 }
 
-var shocksInfo = {
+// 股票在本地的属性，如是否显示
+var shockLocalPropMap = {
 	'sz000725':{display: true},
 	'sz002419':{display: true},
 	'sh000001':{display: true}
@@ -21,11 +22,11 @@ var shocksInfo = {
 /**
 	生成股票信息
 */
-function generateShocksInfo(){
+function generateShockLocalPropMap(){
 	var defaultProp = {display: true}
-	var newShockCodeArr = _.difference(settings.shockCodeList,Object.keys(shocksInfo))
-// 	var delShockCodeArr = _.difference(Object.keys(shocksInfo),settings.shockCodeList)
-	newShockCodeArr.forEach(shockCode => shocksInfo[shockCode] = _.cloneDeep(defaultProp))
+	var newShockCodeArr = _.difference(settings.shockCodeList,Object.keys(shockLocalPropMap))
+// 	var delShockCodeArr = _.difference(Object.keys(shockLocalPropMap),settings.shockCodeList)
+	newShockCodeArr.forEach(shockCode => shockLocalPropMap[shockCode] = _.cloneDeep(defaultProp))
 }
 
 // 保存设置到存储
@@ -66,16 +67,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 
 /* ******************************** ajax/fetch 获取股票并返回结果 *************************************************** */
 /**
- * 获取股票信息
+ * 获取所有股票的详细资料
  * @Returns Promise<[[shockCode]:{
- 	infoArr,
+ 	dealDataList,
 	name,
 	yesterdayEndPrice,
 	currentPrice,
 	changePercent
  },...]>
  */
-function getShockDealInfo(){
+function fetchAllShockDealData(){
 	let url = `http://hq.sinajs.cn/?list=${getDisplayShockCodeList().join(',')}`
 	return fetch(url)
 		.then(res => res.blob())
@@ -94,8 +95,14 @@ function getShockDealInfo(){
 				if(regResult === null){
 					break
 				}
-				var infoArr = regResult[2].split(',')
-				result[regResult[1]] = {infoArr,name:infoArr[0],yesterdayEndPrice:infoArr[2],currentPrice:infoArr[3],changePercent:Math.round((infoArr[3]-infoArr[2])/infoArr[2]*10000)/100}
+				var dealDataList = regResult[2].split(',')
+				var shockCode = regResult[1]
+				result[shockCode] = {dealDataList,
+					name:dealDataList[0], // 股票名称
+					yesterdayEndPrice:dealDataList[2], // 昨日收盘价
+					currentPrice:dealDataList[3], // 当前价
+					changePercent:Math.round((dealDataList[3]-dealDataList[2])/dealDataList[2]*10000)/100 // 涨跌幅
+				}
 			}
 			return result
 		})
@@ -106,19 +113,19 @@ function getShockDealInfo(){
 */
 async function shockHtml(){
 	console.debug(new Date())
-	var shockInfos = await getShockDealInfo()
-	var shockWebInfoValues = Object.values(shockInfos)
+	var shockDealDataMap = await fetchAllShockDealData()
+	var shockDealDataValueList = Object.values(shockDealDataMap)
 	var html
-	if(shockWebInfoValues.length > 0){
-		html = shockWebInfoValues.map(shockInfo => {
+	if(shockDealDataValueList.length > 0){
+		html = shockDealDataValueList.map(shockDealData => {
 			return `<div>
-				<span>${shockInfo.name}</span>：<span>${shockInfo.currentPrice}</span>（<span>${shockInfo.changePercent}</span>）
+				<span>${shockDealData.name}</span>：<span>${shockDealData.currentPrice}</span>（<span>${shockDealData.changePercent}</span>）
 			</div>`
 		}).reduce((a,b)=>a + b)
 	}else{
 		html = `<div>no shock</div>`
 	}
-	return`${html}`
+	return html
 }
 
 /**
@@ -182,8 +189,8 @@ function toggleRefresh(){
 /**
 	获取股票信息
 */
-function getShocksInfo(){
-	return shocksInfo
+function getShockLocalPropMap(){
+	return shockLocalPropMap
 }
 
 /**
@@ -191,7 +198,7 @@ function getShocksInfo(){
 	@Returns Array<String>
 */
 function getAllShockCodes(){
-	return Object.keys(shocksInfo)
+	return Object.keys(shockLocalPropMap)
 }
 
 /**
@@ -199,7 +206,7 @@ function getAllShockCodes(){
 	@Returns Array<String>
 */
 function getDisplayShockCodeList(){
-	return Object.entries(shocksInfo).filter(([key,prop])=>prop.display).map(([key,prop])=>key)
+	return Object.entries(shockLocalPropMap).filter(([key,prop])=>prop.display).map(([key,prop])=>key)
 }
 
 /**
@@ -211,31 +218,31 @@ function addShock(shockCode){
 		return
 	}
 	settings.shockCodeList.push(shockCode)
-	generateShocksInfo()
+	generateShockLocalPropMap()
 	saveStorage()
 }
 /**
 	删除股票
 */
 function removeShock(shockCode){
-	if(!settings.shockCodeList.includes(shockCode) && !shocksInfo[shockCode]){
+	if(!settings.shockCodeList.includes(shockCode) && !shockLocalPropMap[shockCode]){
 		console.error(`股票代码不存在:${shockCode}`)
 		return
 	}
 	settings.shockCodeList.splice(settings.shockCodeList.indexOf(shockCode),1)
-	delete shocksInfo[shockCode]
-	generateShocksInfo()
+	delete shockLocalPropMap[shockCode]
+	generateShockLocalPropMap()
 	saveStorage()
 }
 /**
 	切换股票显示/隐藏
 */
 function toggleDisplay(shockCode){
-	if(!shocksInfo[shockCode]){
+	if(!shockLocalPropMap[shockCode]){
 		console.error(`股票代码不存在:${shockCode}`)
 		return
 	}
-	shocksInfo[shockCode].display = !shocksInfo[shockCode].display
+	shockLocalPropMap[shockCode].display = !shockLocalPropMap[shockCode].display
 }	
 
 
@@ -252,6 +259,6 @@ chrome.notifications.create('start',{
 
 // 初始化获取数据
 getStorage().then(()=>{
-	generateShocksInfo()
+	generateShockLocalPropMap()
 	if(settings.running) loop()
 })
