@@ -12,7 +12,10 @@
         "16": "image/icon48.png"
     },
     "background": {
-        "scripts": ["js/background.js"]
+        "scripts": [
+        	"js/lodash/lodash-4.17.15.js",
+        	"js/background.js"
+        ]
     },
     "content_scripts": [{
         "matches": ["<all_urls>"],

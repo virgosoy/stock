@@ -76,7 +76,7 @@ function appendShock(){
 */
 function observerAttached(){
 	chrome.runtime.sendMessage({message: '添加观察者'}, function(response) {
-		console.log('收到来自后台的回复：' + response);
+		console.debug('收到来自后台的回复：' + response);
 	});	
 }
 
@@ -86,7 +86,7 @@ function observerAttached(){
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse)
 {
 	contentDom.innerHTML = request
-	console.log('收到了后台的消息',new Date())
+	console.debug('收到了后台的消息',new Date())
 	sendResponse('我收到了你的消息！');
 });
 

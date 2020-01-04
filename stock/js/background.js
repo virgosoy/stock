@@ -1,18 +1,37 @@
 const APPNAME = 'stock';
 
+console.info(`lodash version: ${_.VERSION}`)
+
 var timer; // 定时器
 
 // 设置（此处的值为默认值，会和存储里面的拼接）
 var settings = {
 	running: true, // 是否运行中
 	refreshMsTime: 1000, // 刷新时间间隔
-	shockCodes:['sh000001'] // 显示的股票
+	shockCodeList: ['sz000725','sz002419','sh000001','sz002594'], // 所有股票列表
+	// 废弃：shockCodes，可能会被存储
+}
+
+var shocksInfo = {
+	'sz000725':{display: true},
+	'sz002419':{display: true},
+	'sh000001':{display: true}
+} // 股票的具体属性{display:boolean是否显示}
+
+/**
+	生成股票信息
+*/
+function generateShocksInfo(){
+	var defaultProp = {display: true}
+	var newShockCodeArr = _.difference(settings.shockCodeList,Object.keys(shocksInfo))
+// 	var delShockCodeArr = _.difference(Object.keys(shocksInfo),settings.shockCodeList)
+	newShockCodeArr.forEach(shockCode => shocksInfo[shockCode] = _.cloneDeep(defaultProp))
 }
 
 // 保存设置到存储
 function saveStorage(){
 	chrome.storage.local.set(settings,function(){
-		console.log(`saveStorage success`,settings)
+		console.info(`saveStorage success`,settings)
 	})
 }
 /**
@@ -22,13 +41,14 @@ function saveStorage(){
 function getStorage(){
 	return new Promise(resolve => {
 		chrome.storage.local.get(settings,function(v){
-			console.log(`getStorage success`,v)
+			console.info(`getStorage success`,v)
 			settings = Object.assign(settings,v);
 			resolve(settings)
 		})	
 	})
 }
 
+/* ******************************** 观察者模式 *************************************************** */
 
 // 观察者列表
 var observerList = []
@@ -38,12 +58,13 @@ var observerList = []
 */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 	observerList.push(sender.tab.id);
-	console.log('收到来自content-script的消息：');
-	console.log(request, sender, sendResponse);
+	console.debug('收到来自content-script的消息：');
+	console.debug(request, sender, sendResponse);
 	sendResponse('我是后台，我已收到你的消息：' + JSON.stringify(request));
 })
 
 
+/* ******************************** ajax/fetch 获取股票并返回结果 *************************************************** */
 /**
  * 获取股票信息
  * @Returns Promise<[[shockCode]:{
@@ -54,8 +75,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 	changePercent
  },...]>
  */
-function getShockInfo(){
-	let url = `http://hq.sinajs.cn/?list=${settings.shockCodes.join(',')}`
+function getShockDealInfo(){
+	let url = `http://hq.sinajs.cn/?list=${getDisplayShockCodeList().join(',')}`
 	return fetch(url)
 		.then(res => res.blob())
 		.then(blob => new Promise((resolve)=>{
@@ -84,14 +105,20 @@ function getShockInfo(){
 	@Returns Promise<String> html文本
 */
 async function shockHtml(){
-	console.log(new Date())
-	var shockInfos = await getShockInfo()
-	var html = Object.values(shockInfos).map(shockInfo => {
-		return `<div>
-			<span>${shockInfo.name}</span>：<span>${shockInfo.currentPrice}</span>（<span>${shockInfo.changePercent}</span>）
-		</div>`
-	}).reduce((a,b)=>a + b)
-	return`<div></div>${html}`
+	console.debug(new Date())
+	var shockInfos = await getShockDealInfo()
+	var shockWebInfoValues = Object.values(shockInfos)
+	var html
+	if(shockWebInfoValues.length > 0){
+		html = shockWebInfoValues.map(shockInfo => {
+			return `<div>
+				<span>${shockInfo.name}</span>：<span>${shockInfo.currentPrice}</span>（<span>${shockInfo.changePercent}</span>）
+			</div>`
+		}).reduce((a,b)=>a + b)
+	}else{
+		html = `<div>no shock</div>`
+	}
+	return`${html}`
 }
 
 /**
@@ -102,9 +129,9 @@ var loop = () => {
 		shockHtml().then(html => {
 			observerList.forEach((tabId) =>{
 				chrome.tabs.sendMessage(tabId,html,function(response){
-					console.log(response)
+					console.debug(response)
 					if(chrome.runtime.lastError){
-						console.log(`error:${chrome.runtime.lastError.message}`)
+						console.info(`error:${chrome.runtime.lastError.message}`)
 						observerList.splice(observerList.indexOf(tabId),1)
 					}
 				})
@@ -153,30 +180,66 @@ function toggleRefresh(){
 }
 
 /**
+	获取股票信息
+*/
+function getShocksInfo(){
+	return shocksInfo
+}
+
+/**
+	获取所有的股票代码设置，给popup显示
+	@Returns Array<String>
+*/
+function getAllShockCodes(){
+	return Object.keys(shocksInfo)
+}
+
+/**
+	获取显示的股票代码数组
+	@Returns Array<String>
+*/
+function getDisplayShockCodeList(){
+	return Object.entries(shocksInfo).filter(([key,prop])=>prop.display).map(([key,prop])=>key)
+}
+
+/**
 	添加股票
 */
 function addShock(shockCode){
-	if(settings.shockCodes.includes(shockCode)){
+	if(settings.shockCodeList.includes(shockCode)){
 		console.error(`股票代码已存在:${shockCode}`)
 		return
 	}
-	settings.shockCodes.push(shockCode)
+	settings.shockCodeList.push(shockCode)
+	generateShocksInfo()
 	saveStorage()
 }
 /**
 	删除股票
 */
 function removeShock(shockCode){
-	if(!settings.shockCodes.includes(shockCode)){
+	if(!settings.shockCodeList.includes(shockCode) && !shocksInfo[shockCode]){
 		console.error(`股票代码不存在:${shockCode}`)
 		return
 	}
-	settings.shockCodes.splice(settings.shockCodes.indexOf(shockCode),1)
+	settings.shockCodeList.splice(settings.shockCodeList.indexOf(shockCode),1)
+	delete shocksInfo[shockCode]
+	generateShocksInfo()
 	saveStorage()
 }
+/**
+	切换股票显示/隐藏
+*/
+function toggleDisplay(shockCode){
+	if(!shocksInfo[shockCode]){
+		console.error(`股票代码不存在:${shockCode}`)
+		return
+	}
+	shocksInfo[shockCode].display = !shocksInfo[shockCode].display
+}	
 
 
-/************* 页面载入时执行 ********/
+/* ************************************ 页面载入时执行 *************************************** */
 /** 通知 **/
 chrome.notifications.create('start',{
 	type:chrome.notifications.TemplateType.BASIC,
@@ -189,5 +252,6 @@ chrome.notifications.create('start',{
 
 // 初始化获取数据
 getStorage().then(()=>{
+	generateShocksInfo()
 	if(settings.running) loop()
 })

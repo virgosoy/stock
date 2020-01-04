@@ -11,7 +11,11 @@
 		<ul class="shock-list__items-wrap">
 		</ul>
 		<template class="shock-list__item-template">
-			<li class="shock-list__item"><span class="shock-list__item-code"></span><button type="button" class="shock-list__item-remove-btn">x</button></li>
+			<li class="shock-list__item">
+				<span class="shock-list__item-code"></span>
+				<button type="button" class="shock-list__item-remove-btn">x</button>
+				<button type="button" class="shock-list__item-toggle-display">{{display}}</button>
+			</li>
 		</template>
 		<input type="text" class="shock-list__add-input" /><button type="button" class="shock-list__add-btn">add</button>
     </div>
