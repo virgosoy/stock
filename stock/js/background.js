@@ -10,8 +10,7 @@ var settings = {
 	refreshMsTime: 1000, // 刷新时间间隔
 	// 默认股票代码列表，用于手动修改代码码设置默认显示股票
 	defaultShockCodeList: ['sz000725','sh000001'], 
-	// shockCodeList: ['sh000001'], // 所有股票列表
-	// 废弃：shockCodes，可能会被存储
+	// @Deprecated shockCodes，可能会被存储
 	// 股票在本地的属性，如是否显示
 	shockLocalPropMap: {
 	// 	'sh000001':{display: true}
