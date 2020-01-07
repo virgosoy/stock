@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "stock",
     "description": "股票插件",
-    "version": "0.0.0.5",
+    "version": "0.0.0.6",
     "browser_action": {
         "default_title": "股票插件",
         "default_popup": "popup.html",
