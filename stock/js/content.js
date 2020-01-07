@@ -6,7 +6,13 @@ var shockDom = document.createElement("div")
 var shockDisplayBtn
 var shockContent
 
-var timer
+/**
+	刷新股票控件的z-index，使其不被遮挡
+*/
+function refreshZIndex(){
+	var maxZIndex = Array.from(document.body.children).map(ele => +window.getComputedStyle(ele).zIndex || 0).reduce((a,b)=>Math.max(a,b))
+	shockDom.style.zIndex = maxZIndex + 1
+}
 /**
  * 添加股票到界面上
  */
@@ -61,21 +67,6 @@ function appendShock(){
 	shockContent.addEventListener('click',function(e){
 		shockContent.classList.toggle('shock__content--hide')
 	})
-// 	var mo = new MutationObserver(function(mutationRecords,observer){
-// 		if(mutationRecords.some(mr=>mr.attributeName === 'class')){
-// 			if(shockContent.classList.contains('shock__content--hide')){
-// 				clearInterval(timer)
-// 				timer = undefined
-// 			}else{
-// 				if(timer)return
-// 				timer = setInterval(function(){
-// 					refreshShock()
-// 				},1000)
-// 			}
-// 		}
-// 	})
-// 	mo.observe(shockContent,{attributes: true,attributeFilter: ['class']})
-
 	document.body.appendChild(shockDom)
 }
 
@@ -110,4 +101,5 @@ function delay(ms){
 
 /* *************************** 执行代码 *************************** */
 appendShock()
+refreshZIndex()
 observerAttached()
