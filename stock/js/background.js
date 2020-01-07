@@ -1,4 +1,10 @@
-const APPNAME = 'stock';
+const APPNAME = 'shock'
+const CMD = {
+	SHOCK_DEAL_DATA:'shockDealData',
+	REFRESH_Z_INDEX:'refreshZIndex'
+}
+globalThis.APPNAME = APPNAME
+globalThis.CMD = CMD
 
 console.info(`lodash version: ${_.VERSION}`)
 
@@ -146,7 +152,7 @@ var loop = () => {
 	timer = setTimeout(function(){
 		shockHtml().then(html => {
 			observerList.forEach((tabId) =>{
-				chrome.tabs.sendMessage(tabId,html,function(response){
+				chrome.tabs.sendMessage(tabId,{cmd:CMD.SHOCK_DEAL_DATA,data:html},function(response){
 					console.debug(response)
 					if(chrome.runtime.lastError){
 						console.info(`error:${chrome.runtime.lastError.message}`)

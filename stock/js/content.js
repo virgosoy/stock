@@ -1,5 +1,8 @@
-const APPNAME = 'shock';
-
+const APPNAME = 'shock'
+const CMD = {
+	SHOCK_DEAL_DATA:'shockDealData',
+	REFRESH_Z_INDEX:'refreshZIndex'
+}
 
 // DOM
 var shockDom = document.createElement("div")
@@ -79,16 +82,6 @@ function observerAttached(){
 	});	
 }
 
-/**
-	background返回股票信息
-*/
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse)
-{
-	shockContent.innerHTML = request
-	console.debug('收到了后台的消息',new Date())
-	sendResponse('我收到了你的消息！');
-});
-
 function delay(ms){
 	return new Promise(function(resolve){
 		setTimeout(function(){
@@ -97,7 +90,24 @@ function delay(ms){
 	})	
 }
 
+/* *********************** background / popup 返回信息 **************************** */
 
+/**
+	background返回股票信息
+*/
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
+	switch(request.cmd){
+	case CMD.REFRESH_Z_INDEX:
+		console.debug('收到后台消息',request.cmd)
+		refreshZIndex()
+// 		sendResponse()
+		break;
+	case CMD.SHOCK_DEAL_DATA:
+		shockContent.innerHTML = request.data
+		console.debug('收到了后台的消息',new Date())
+		sendResponse('我收到了你的消息！');
+	}
+});
 
 /* *************************** 执行代码 *************************** */
 appendShock()
