@@ -26,8 +26,6 @@ settings：配置项，详见 `background.js` 的变量 `settings`
 
 ## TODO List
 
-- [x] 可输入备注
-
 - [ ] 隐藏时不执行定时器
 - [ ] 消息弹窗
   - [ ] 设置预警金额
@@ -35,7 +33,9 @@ settings：配置项，详见 `background.js` 的变量 `settings`
 - [ ] 可设置显示内容模板
 - [ ] 全局一同显示/隐藏
 
+## 0.0.0.7.200223_beta
 
+A：可输入备注
 
 ## 0.0.0.6.200107_beta
 
