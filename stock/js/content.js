@@ -30,13 +30,6 @@ var shockDisplayBtn
 var shockContent
 
 /**
-	刷新股票控件的z-index，使其不被遮挡
-*/
-function refreshZIndex(){
-	var maxZIndex = Array.from(document.all).map(ele => +window.getComputedStyle(ele).zIndex || 0).reduce((a,b)=>Math.max(a,b))
-	shockDom.style.zIndex = maxZIndex + 1
-}
-/**
  * 添加股票到界面上
  */
 function appendShock(){
@@ -125,7 +118,7 @@ function shockItemHtmlTemplate(shockDealData){
 	刷新股票控件的z-index，使其不被遮挡
 */
 function refreshZIndex(){
-	var maxZIndex = Array.from(document.body.children).map(ele => +window.getComputedStyle(ele).zIndex || 0).reduce((a,b)=>Math.max(a,b))
+	var maxZIndex = Array.from(document.all).map(ele => +window.getComputedStyle(ele).zIndex || 0).reduce((a,b)=>Math.max(a,b))
 	shockDom.style.zIndex = maxZIndex + 1
 }
 
