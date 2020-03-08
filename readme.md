@@ -31,6 +31,8 @@ settings：配置项，详见 `background.js` 的变量 `settings`
 
 ## TODO List
 
+- [x] fixbug：关闭浏览器后原来的配置丢失 （dev）
+
 - [ ] 隐藏时不执行定时器
 - [ ] 消息弹窗
   - [ ] 设置预警金额
