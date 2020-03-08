@@ -59,6 +59,7 @@ function generateShockLocalPropMap({add = [],del = []} = {}){
 	if(!shockLocalPropMap || Object.keys(shockLocalPropMap).length === 0){
 		settings.defaultShockCodeList.forEach(shockCode => shockLocalPropMap[shockCode] = _.cloneDeep(defaultProp))
 	}
+	saveStorage()
 }
 
 // 保存设置到存储
