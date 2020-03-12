@@ -40,8 +40,9 @@ function appendShock(){
 			bottom: 0;
 			background: rgba(0,0,0,0.4);
 			border-top-right-radius: 10px;
-			font-size: 12px;
+			font: 12px 微软雅黑;
 			color: #000;
+			text-align: left;
 		}
 		#shockDom .shock__display-btn{
 			opacity: 0;

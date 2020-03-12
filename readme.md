@@ -32,6 +32,7 @@ settings：配置项，详见 `background.js` 的变量 `settings`
 ## TODO List
 
 - [x] fixbug：关闭浏览器后原来的配置丢失 （dev）
+- [ ] 调整样式 fb-style
 
 - [ ] 隐藏时不执行定时器
 - [ ] 消息弹窗
@@ -39,6 +40,8 @@ settings：配置项，详见 `background.js` 的变量 `settings`
 - [ ] 设置错误提示
 - [ ] 可设置显示内容模板
 - [ ] 全局一同显示/隐藏
+
+
 
 
 
