@@ -32,9 +32,6 @@ settings：配置项，详见 `background.js` 的变量 `settings`
 
 ## TODO List
 
-- [x] fixbug：关闭浏览器后原来的配置丢失 （dev）
-- [x] 可设置显示内容模板（fb-template）
-- [x] 股票内容显示模板可以显式插入变量 (fb-template)
 - [ ] 获取当日均价
 - [ ] 隐藏时不执行定时器
 - [ ] 消息弹窗
@@ -43,6 +40,14 @@ settings：配置项，详见 `background.js` 的变量 `settings`
 - [ ] 全局一同显示/隐藏
 
 
+
+## 0.0.0.9.200314_beta
+
+F：关闭浏览器后原来的配置丢失
+
+A：可设置显示内容模板
+
+A：股票内容显示模板可以显式插入变量
 
 ## 0.0.0.8.200223_beta
 
