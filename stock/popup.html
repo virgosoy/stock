@@ -6,6 +6,10 @@
 		.content-controller--cursor-pointer{
 			cursor:pointer;
 		}
+		.shock-item-template__value{
+			width: 300px; height: 50px;
+			font: inherit;
+		}
 	</style>
 </head>
 <body>
@@ -26,6 +30,10 @@
 			</li>
 		</template>
 		<input type="text" class="shock-list__add-input" /><button type="button" class="shock-list__add-btn">add</button>
+    </div>
+    <div class="shock-item-template">
+        <textarea class="shock-item-template__value"></textarea>
+        <button type="button" class="shock-item-template__submit">提交模板</button>
     </div>
 <script type="text/javascript" src="js/popup.js"></script>
 </body>

@@ -17,6 +17,9 @@ var shockListAddInput = document.querySelector('.shock-list__add-input')
 var shockListDom = document.querySelector('.shock-list')
 // 股票控件操作
 var contentControllerZIndex = document.querySelector('.content-controller__z-index')
+// 模板
+var templateValueDom = document.querySelector('.shock-item-template__value')
+var templateSubmitDom = document.querySelector('.shock-item-template__submit')
 
 /* ************************************事件监听****************************************** */
 
@@ -54,6 +57,11 @@ contentControllerZIndex.addEventListener('click',function(e){
     })
 })
 
+templateSubmitDom.addEventListener('click',function(e){
+    let shockItemTemplate = templateValueDom.value;
+    bg.setShockItemTemplate(shockItemTemplate);
+})
+
 /* ****************** popup.html 渲染 ************************************ */
 
 // 渲染显示：刷新时间
@@ -83,11 +91,22 @@ function renderShockList(){
     })
 }
 
+// 渲染：提交模板
+function renderShockItemTemplate(){
+    templateValueDom.value = bg.getShockItemTemplate()
+}
+
+// 所有渲染
+function render(){
+    renderRefreshMsTime()
+    renderRunning()
+    renderShockList()
+    renderShockItemTemplate()
+}
+
 /* ******************* 执行 ******************* */
 
 // 初始化渲染
-renderRefreshMsTime()
-renderRunning()
-renderShockList()
+render()
 
 

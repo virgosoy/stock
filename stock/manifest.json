@@ -14,6 +14,7 @@
     "background": {
         "scripts": [
         	"js/lodash/lodash-4.17.15.js",
+            "js/utils.js",
         	"js/background.js"
         ]
     },
