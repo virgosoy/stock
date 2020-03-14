@@ -1,17 +1,3 @@
-/*
-结构说明：
-shockDealData:{
- 	dealDataList,
-	name,
-	yesterdayEndPrice,
-	currentPrice,
-	changePercent,
-	// 后生成
-	remark,
-	text
-}
-*/
-
 /* ****************** background、content 共用 ***************** */
 const APPNAME = 'shock'
 // 消息通讯命令常量
@@ -24,10 +10,23 @@ const CMD = {
 	OBSERVER_ATTACHED:'observerAttached'
 }
 /* ****************** background、content 共用 end ***************** */
+//shockDealDat 结构说明：
+const shockDealDataDoc = {
+	dealDataList:'数据列表',
+	name:'名称',
+	yesterdayEndPrice:'昨日收盘价',
+	currentPrice:'当前价',
+	changePercent:'当前涨跌幅',
+	// 后生成
+	remark:'备注'
+	//text:'模板解析后文本'
+}
 /* ************** popup 也使用 ************** */
 globalThis.APPNAME = APPNAME
 globalThis.CMD = CMD
+globalThis.shockDealDataDoc = shockDealDataDoc
 /* ************** popup 也使用 end ************** */
+
 
 console.info(`lodash version: ${_.VERSION}`)
 

@@ -20,6 +20,7 @@ chrome浏览器插件，显示股票信息
 - 股票新增/删除
 - 股票显示/隐藏
 - 更新当前页控件z-index
+- 股票内容显示模板
 
 
 
@@ -32,7 +33,8 @@ settings：配置项，详见 `background.js` 的变量 `settings`
 ## TODO List
 
 - [x] fixbug：关闭浏览器后原来的配置丢失 （dev）
-- [ ] 可设置显示内容模板（fb-template）
+- [x] 可设置显示内容模板（fb-template）
+- [x] 股票内容显示模板可以显式插入变量 (fb-template)
 - [ ] 获取当日均价
 - [ ] 隐藏时不执行定时器
 - [ ] 消息弹窗

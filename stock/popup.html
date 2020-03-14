@@ -3,12 +3,31 @@
 <head>
 	<meta charset="utf-8">
 	<style>
+		ul{margin: 0;padding: 0;}
+		li{list-style: none;}
 		.content-controller--cursor-pointer{
 			cursor:pointer;
 		}
 		.shock-item-template__value{
 			width: 300px; height: 50px;
 			font: inherit;
+		}
+		.shock-item-template__variable-list--hide{
+			display: none;
+		}
+		.shock-item-template__variable-item{
+			display: flex;
+			border: 1px solid;
+			cursor: pointer;
+		}
+		.shock-item-template__variable-item + .shock-item-template__variable-item{
+			border-top: none;
+		}
+		.shock-item-template__variable-item:hover{
+			background: #ccc;
+		}
+		.shock-item-template__variable-item > div{
+			flex: 1;
 		}
 	</style>
 </head>
@@ -34,6 +53,16 @@
     <div class="shock-item-template">
         <textarea class="shock-item-template__value"></textarea>
         <button type="button" class="shock-item-template__submit">提交模板</button>
+		<button type="button" class="shock-item-template__variable">插入变量</button>
+		<ul class="shock-item-template__variable-list shock-item-template__variable-list--hide">
+		</ul>
+		<template class="shock-item-template__variable-item-template">
+			<li class="shock-item-template__variable-item">
+				<div class="shock-item-template__variable-item-name-wrap"
+					>${<span class="shock-item-template__variable-item-name">{{name}}</span>}</div>
+				<div class="shock-item-template__variable-item-description">{{description}}</div>
+			</li>
+		</template>
     </div>
 <script type="text/javascript" src="js/popup.js"></script>
 </body>
