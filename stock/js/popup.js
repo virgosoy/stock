@@ -17,6 +17,13 @@ var shockListAddInput = document.querySelector('.shock-list__add-input')
 var shockListDom = document.querySelector('.shock-list')
 // 股票控件操作
 var contentControllerZIndex = document.querySelector('.content-controller__z-index')
+// 模板
+var templateValueDom = document.querySelector('.shock-item-template__value')
+var templateSubmitDom = document.querySelector('.shock-item-template__submit')
+var templateVariableBtnDom = document.querySelector('.shock-item-template__variable')
+var templateVariableListDom = document.querySelector('.shock-item-template__variable-list')
+var templateVariableItemTempDom = document.querySelector('.shock-item-template__variable-item-template')
+
 
 /* ************************************事件监听****************************************** */
 
@@ -54,6 +61,26 @@ contentControllerZIndex.addEventListener('click',function(e){
     })
 })
 
+templateSubmitDom.addEventListener('click',function(e){
+    let shockItemTemplate = templateValueDom.value;
+    bg.setShockItemTemplate(shockItemTemplate);
+})
+
+templateVariableBtnDom.addEventListener('click',function(){
+    templateVariableListDom.classList.toggle('shock-item-template__variable-list--hide')
+    templateValueDom.focus()
+})
+
+templateVariableListDom.addEventListener('click',function(e){
+    let value = e.path.find(dom=>dom?.classList?.contains('shock-item-template__variable-item'))
+        ?.querySelector('.shock-item-template__variable-item-name-wrap')
+        ?.innerText
+    if(typeof value !== 'undefined'){
+        templateValueDom.setRangeText(value,templateValueDom.selectionStart,templateValueDom.selectionEnd,"end")
+        templateValueDom.focus()
+    }
+})
+
 /* ****************** popup.html 渲染 ************************************ */
 
 // 渲染显示：刷新时间
@@ -83,11 +110,33 @@ function renderShockList(){
     })
 }
 
+// 渲染：提交模板
+function renderShockItemTemplate(){
+    templateValueDom.value = bg.getShockItemTemplate()
+}
+
+// 渲染：模板变量列表
+function renderShockItemVariable(){
+    Object.entries(bg.shockDealDataDoc).forEach(([name,description])=>{
+        let itemDom = templateVariableItemTempDom.content.cloneNode(true)
+        itemDom.querySelector('.shock-item-template__variable-item-name').innerText = name
+        itemDom.querySelector('.shock-item-template__variable-item-description').innerText = description
+        templateVariableListDom.appendChild(itemDom)
+    })
+}
+
+// 所有渲染
+function render(){
+    renderRefreshMsTime()
+    renderRunning()
+    renderShockList()
+    renderShockItemTemplate()
+    renderShockItemVariable()
+}
+
 /* ******************* 执行 ******************* */
 
 // 初始化渲染
-renderRefreshMsTime()
-renderRunning()
-renderShockList()
+render()
 
 

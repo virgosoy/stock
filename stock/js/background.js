@@ -10,19 +10,35 @@ const CMD = {
 	OBSERVER_ATTACHED:'observerAttached'
 }
 /* ****************** background、content 共用 end ***************** */
+//shockDealDat 结构说明：
+const shockDealDataDoc = {
+	dealDataList:'数据列表',
+	name:'名称',
+	yesterdayEndPrice:'昨日收盘价',
+	currentPrice:'当前价',
+	changePercent:'当前涨跌幅',
+	// 后生成
+	remark:'备注'
+	//text:'模板解析后文本'
+}
 /* ************** popup 也使用 ************** */
 globalThis.APPNAME = APPNAME
 globalThis.CMD = CMD
+globalThis.shockDealDataDoc = shockDealDataDoc
 /* ************** popup 也使用 end ************** */
+
 
 console.info(`lodash version: ${_.VERSION}`)
 
-var timer; // 定时器
+// 定时器
+var timer; 
 
 // 设置（此处的值为默认值，会和存储里面的拼接）
 var settings = {
 	running: true, // 是否运行中
 	refreshMsTime: 1000, // 刷新时间间隔
+	// 股票显示模板
+	shockItemTemplate: '${name}：${currentPrice}（${changePercent}）',
 	// 默认股票代码列表，用于手动修改代码码设置默认显示股票
 	defaultShockCodeList: ['sz000725','sh000001'], 
 	// @Deprecated shockCodes，可能会被存储
@@ -140,18 +156,9 @@ async function shockHtml(){
 	shockDealDataValueList.forEach(shockDealData => {
 		var remark = shockLocalPropMap[shockDealData.shockCode].remark || ''
 		shockDealData.remark = remark
+		shockDealData.text = Utils.parseTemplate(shockDealData, settings.shockItemTemplate)
 	})
-	var html
-	if(shockDealDataValueList.length > 0){
-		html = shockDealDataValueList.map(shockDealData => {
-			return `<div class="shock__item shock__item-code-${shockDealData.shockCode}">
-				<span class="shock__item-name">${shockDealData.name}</span>：<span class="shock__item-current-price">${shockDealData.currentPrice}</span>（<span class="shock__item-change-percent">${shockDealData.changePercent}</span>）<span contenteditable class="shock__item-remark">${shockDealData.remark}</span>
-			</div>`
-		}).reduce((a,b)=>a + b)
-	}else{
-		html = `<div>no shock</div>`
-	}
-	return [html,shockDealDataValueList]
+	return shockDealDataValueList
 }
 
 /**
@@ -159,10 +166,10 @@ async function shockHtml(){
 */
 var loop = () => {
 	timer = setTimeout(function(){
-		shockHtml().then(([html,shockDealDataList]) => {
+		shockHtml().then(shockDealDataList => {
 			observerList.forEach((tabId) =>{
 				chrome.tabs.sendMessage(tabId,{cmd:CMD.SHOCK_DEAL_DATA,
-						data:{html:html,shockDealDataList: shockDealDataList}},
+						data:{shockDealDataList: shockDealDataList}},
 						function(response){
 					console.debug(response)
 					if(chrome.runtime.lastError){
@@ -293,6 +300,19 @@ function toggleDisplay(shockCode){
 */
 function setShockRemark(shockCode,remark){
 	shockLocalPropMap[shockCode].remark = remark
+}
+/**
+    设置股票显示模板
+*/
+function setShockItemTemplate(template){
+	settings.shockItemTemplate = template
+	saveStorage()
+}
+/**
+    获取股票显示模板
+*/
+function getShockItemTemplate(){
+	return settings.shockItemTemplate
 }
 
 /* ************************************ 页面载入时执行 *************************************** */

@@ -70,11 +70,7 @@ function appendShock(){
 	</style>
 	<div class="shock__display-btn">○</div>
 	<div class="shock__content shock__content--hide">
-		<!-- shockItemHtmlTemplate()
-		<div class="shock__item shock__item-code-sh000001" data-shock-code="sh000001">
-			<span class="shock__item-name">上证指数</span>：<span class="shock__item-current-price">3083.7858</span>（<span class="shock__item-change-percent">-0.05</span>）<span contenteditable class="shock__item-remark">备注</span>
-		</div>
-		-->
+		<!-- shockItemHtmlTemplate() -->
 	</div>`
 
 	shockDom.id = 'shockDom'
@@ -109,7 +105,7 @@ function appendShock(){
 /* ********************** html 模板 ************************* */
 function shockItemHtmlTemplate(shockDealData){
 	return `<div class="shock__item shock__item-code-${shockDealData.shockCode}" data-shock-code="${shockDealData.shockCode}">
-			<span class="shock__item-name">${shockDealData.name}</span>：<span class="shock__item-current-price">${shockDealData.currentPrice}</span>（<span class="shock__item-change-percent">${shockDealData.changePercent}</span>）<span contenteditable class="shock__item-remark">${shockDealData.remark}</span>
+			<span class="shock__item-text">${shockDealData.text}</span><span contenteditable class="shock__item-remark">${shockDealData.remark}</span>
 		</div>`
 }
 
@@ -135,9 +131,7 @@ function renderShockContent(shockDealDataList){
 			shockContent.insertAdjacentHTML('beforeend',shockItemHtmlTemplate(shockDealData))
 		}else{
 			// 更新已经存在股票详细信息
-			shockItem.querySelector('.shock__item-name').innerText = shockDealData.name
-			shockItem.querySelector('.shock__item-current-price').innerText = shockDealData.currentPrice
-			shockItem.querySelector('.shock__item-change-percent').innerText = shockDealData.changePercent
+			shockItem.querySelector('.shock__item-text').innerText = shockDealData.text
             // 如果获得焦点则不更新remark
             if(document.activeElement !== shockItem.querySelector('.shock__item-remark')){
 			    shockItem.querySelector('.shock__item-remark').innerText = shockDealData.remark
