@@ -9,8 +9,12 @@
 		var reg = /\${([^}]+)}/mg
 		var result = template.replace(reg, function(match,variable){
 			var value = data[variable]
+			// with(data){
+			// 	// value = eval('('+variable+')')
+			// 	value = new Function('return '+variable)()
+			// }
 			if(typeof value === "undefined"){
-				return ""
+				return ''
 			}else{
 				return value
 			}

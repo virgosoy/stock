@@ -13,10 +13,17 @@ const CMD = {
 //shockDealDat 结构说明：
 const shockDealDataDoc = {
 	dealDataList:'数据列表',
+	shockCode: '股票代码（新浪的）',
 	name:'名称',
 	yesterdayEndPrice:'昨日收盘价',
 	currentPrice:'当前价',
-	changePercent:'当前涨跌幅',
+	changePercent:'涨跌幅',
+	openingPrice: '开盘价',
+	highestPrice: '今日最高价',
+	lowestPrice: '今日最低价',
+	tradeVolume: '今日成交量',
+	tradeMoney: '今日成交价',
+	avgPrice: '今日均价',
 	// 后生成
 	remark:'备注'
 	//text:'模板解析后文本'
@@ -133,12 +140,19 @@ function fetchAllShockDealData(){
 				}
 				var dealDataList = regResult[2].split(',')
 				var shockCode = regResult[1]
+				// 字段描述见 shockDealDataDoc 常量
 				result[shockCode] = {dealDataList,
-					shockCode:shockCode, // 股票代码（新浪的）
-					name:dealDataList[0], // 股票名称
-					yesterdayEndPrice:dealDataList[2], // 昨日收盘价
-					currentPrice:dealDataList[3], // 当前价
-					changePercent:Math.round((dealDataList[3]-dealDataList[2])/dealDataList[2]*10000)/100 // 涨跌幅
+					shockCode:shockCode, 
+					name:dealDataList[0],
+					yesterdayEndPrice:dealDataList[2],
+					currentPrice:dealDataList[3],
+					changePercent:Math.round((dealDataList[3]-dealDataList[2])/dealDataList[2]*10000)/100,
+					openingPrice: dealDataList[1],
+					highestPrice: dealDataList[4],
+					lowestPrice: dealDataList[5],
+					tradeVolume: dealDataList[8],
+					tradeMoney: dealDataList[9],
+					avgPrice: (dealDataList[9]/dealDataList[8]).toFixed(2)
 				}
 			}
 			return result
