@@ -33,7 +33,7 @@ settings：配置项，详见 `background.js` 的变量 `settings`
 ## TODO List
 
 - [ ] 获取当日均价
-- [ ] 调整样式 fb-style
+- [x] 调整样式 (fb-style)
 - [ ] 隐藏时不执行定时器
 - [ ] 消息弹窗
   - [ ] 设置预警金额
