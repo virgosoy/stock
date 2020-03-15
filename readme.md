@@ -32,8 +32,6 @@ settings：配置项，详见 `background.js` 的变量 `settings`
 
 ## TODO List
 
-- [x] 获取当日均价 (fb-avg-price)
-- [x] 调整样式 (fb-style)
 - [ ] 隐藏时不执行定时器
 - [ ] 消息弹窗
   - [ ] 设置预警金额
@@ -41,6 +39,11 @@ settings：配置项，详见 `background.js` 的变量 `settings`
 - [ ] 全局一同显示/隐藏
 
 
+## 0.0.0.10.200315_beta
+
+A：获取当日均价 (fb-avg-price)
+
+U：调整样式 (fb-style)
 
 ## 0.0.0.9.200314_beta
 
