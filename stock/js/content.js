@@ -5,6 +5,8 @@ const CMD = {
 	// background -> content
 	SHOCK_DEAL_DATA:'shockDealData',
 	REFRESH_Z_INDEX:'refreshZIndex',
+	SET_Z_INDEX:'setZIndex',
+	GET_Z_INDEX:'getZIndex',
 	// content -> background
 	SET_SHOCK_REMARK:'setShockRemark',
 	OBSERVER_ATTACHED:'observerAttached'
@@ -116,7 +118,19 @@ function shockItemHtmlTemplate(shockDealData){
 */
 function refreshZIndex(){
 	var maxZIndex = Array.from(document.all).map(ele => +window.getComputedStyle(ele).zIndex || 0).reduce((a,b)=>Math.max(a,b))
-	shockDom.style.zIndex = maxZIndex + 1
+	setZIndex(maxZIndex + 1)
+}
+/**
+	设置股票控件的z-index
+*/
+function setZIndex(zIndex){
+	shockDom.style.zIndex = zIndex
+}
+/**
+	获取股票控件的z-index
+*/
+function getZIndex(){
+	return shockDom.style.zIndex
 }
 
 /**
@@ -184,6 +198,17 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 		//shockContent.innerHTML = request.data.html
 		console.debug('收到了后台的消息',request.cmd,new Date())
 		sendResponse('我收到了你的消息！');
+		break
+	case CMD.SET_Z_INDEX:
+		console.debug('收到后台消息',request.cmd,request.data)
+		setZIndex(request.data)
+		break
+	case CMD.GET_Z_INDEX:
+		console.debug('收到后台消息',request.cmd)
+		sendResponse({data:getZIndex()})
+		break
+	default:
+		console.warn('无效命令',request.cmd)
 	}
 });
 

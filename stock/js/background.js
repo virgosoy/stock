@@ -5,6 +5,8 @@ const CMD = {
 	// background -> content
 	SHOCK_DEAL_DATA:'shockDealData',
 	REFRESH_Z_INDEX:'refreshZIndex',
+	SET_Z_INDEX:'setZIndex',
+	GET_Z_INDEX:'getZIndex',
 	// content -> background
 	SET_SHOCK_REMARK:'setShockRemark',
 	OBSERVER_ATTACHED:'observerAttached'

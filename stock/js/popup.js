@@ -17,6 +17,7 @@ var shockListAddInput = document.querySelector('.shock-list__add-input')
 var shockListDom = document.querySelector('.shock-list')
 // 股票控件操作
 var contentControllerZIndex = document.querySelector('.content-controller__z-index')
+var zIndexValueDom = document.querySelector('.content-controller__z-index-value')
 // 模板
 var templateValueDom = document.querySelector('.shock-item-template__value')
 var templateSubmitDom = document.querySelector('.shock-item-template__submit')
@@ -57,7 +58,18 @@ shockListAddBtn.addEventListener('click',function(e){
 */
 contentControllerZIndex.addEventListener('click',function(e){
     chrome.tabs.query({active: true, currentWindow: true},function(tabs){
-        chrome.tabs.sendMessage(tabs[0].id, {cmd:bg.CMD.REFRESH_Z_INDEX})
+        chrome.tabs.sendMessage(tabs[0].id, {cmd:bg.CMD.REFRESH_Z_INDEX}, function(response){
+            renderZIndex()
+        })
+    })
+})
+/**
+ * 设置当前页面的控件的z-index
+ */
+zIndexValueDom.addEventListener('input',function(e){
+    var zIndex = zIndexValueDom.value;
+    chrome.tabs.query({active: true, currentWindow: true},function(tabs){
+        chrome.tabs.sendMessage(tabs[0].id, {cmd:bg.CMD.SET_Z_INDEX,data:zIndex})
     })
 })
 
@@ -125,8 +137,18 @@ function renderShockItemVariable(){
     })
 }
 
+// 渲染：获取当前页面控件z-index
+function renderZIndex(){
+    chrome.tabs.query({active: true, currentWindow: true},function(tabs){
+        chrome.tabs.sendMessage(tabs[0].id, {cmd:bg.CMD.GET_Z_INDEX},function(response){
+            zIndexValueDom.value = response.data
+        })
+    })
+}
+
 // 所有渲染
 function render(){
+    renderZIndex()
     renderRefreshMsTime()
     renderRunning()
     renderShockList()
